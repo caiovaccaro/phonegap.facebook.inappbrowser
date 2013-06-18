@@ -38,7 +38,7 @@ var inviteText = 'Get to know my app!',
 		alert('Thanks! Your invite was sent.');
 	},
 	errorCallback = function() {
-		alert('Sorry, we couldn't send your invitation. Try again?');
+		alert("Sorry, we couldn't send your invitation. Try again?");
 	};
 
 FacebookInAppBrowser.invite(inviteText, filters, successCallback, errorCallback);
