@@ -7,7 +7,7 @@ FacebookInAppBrowser uses the InAppBrowser Phonegap plugin and localStorage. Doe
 
 This repo is based on [this question and answer](http://stackoverflow.com/questions/16576977/is-there-any-facebook-plugin-for-phonegap-2-7-0) and on [this repo using ChildBrowser](https://github.com/purplecabbage/phonegap-plugins/tree/master/iPhone/ChildBrowser/FBConnectExample)
 
-Until now only "Login" and "Invite(Request)" is available, but I will add other features soon.
+Until now "Login", "Logout" and "Invite(Request)" are available.
 
 **FacebookInAppBrowser is under development.**
 
@@ -33,7 +33,6 @@ FacebookInAppBrowser.login(loginSuccessCallback, loginUnknowErrorCallback);
 
 // Invite friends
 var inviteText = 'Get to know my app!',
-	filters = 'app_non_users',
 	successCallback = function() {
 		alert('Thanks! Your invite was sent.');
 	},
@@ -41,7 +40,7 @@ var inviteText = 'Get to know my app!',
 		alert("Sorry, we couldn't send your invitation. Try again?");
 	};
 
-FacebookInAppBrowser.invite(inviteText, filters, successCallback, errorCallback);
+FacebookInAppBrowser.invite(inviteText, successCallback, errorCallback);
 
 // Logout
 FacebookInAppBrowser.logout();

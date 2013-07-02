@@ -70,7 +70,7 @@
 
         }
 
-        , invite: function(inviteText, filters, successCallback, errorCallback) {
+        , invite: function(inviteText, successCallback, errorCallback) {
 
             if(typeof inviteText === 'undefined') {
               console.log('[FacebookInAppBrowser] inviteText is a required parameter.');
@@ -84,10 +84,6 @@
                 request_url += "&redirect_uri=" + this.settings.redirectUrl;
                 request_url += "&display=touch";
                 request_url += "&message=" + inviteText;
-                
-                if(typeof filters !== 'undefined') {
-                  request_url += "&filters=" + filters;
-                }
 
                 request_url = encodeURI(request_url);
 
