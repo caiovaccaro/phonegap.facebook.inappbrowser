@@ -42,4 +42,7 @@ var inviteText = 'Get to know my app!',
 	};
 
 FacebookInAppBrowser.invite(inviteText, filters, successCallback, errorCallback);
+
+// Logout
+FacebookInAppBrowser.logout();
 ```
