@@ -9,7 +9,22 @@ This repo is based on [this question and answer](http://stackoverflow.com/questi
 
 Until now "Login", "Logout" and "Invite(Request)" are available.
 
-**FacebookInAppBrowser is under development.**
+**FacebookInAppBrowser is under development.** 
+**Phonegap v2.8 up to 3.0**
+
+Setup
+-----
+
+To use FacebookInAppBrowser you need to follow these steps:
+- Enable InAppBrowser in your Phonegap application as described in ["Accessing the Feature"](http://docs.phonegap.com/en/3.0.0/cordova_inappbrowser_inappbrowser.md.html#InAppBrowser). Instructions are the same for 2.8 up to 3.0 except for the command line interface. If you have 3.0 you need to install the InAppBrowser plugin trough the command line.
+- Download the 'phonegap.facebook.inappbrowser.js' file and place it inside your project (for example in www/js/)
+- In your index.html place a script tag calling the javascript file:
+
+```html
+<script type="text/javascript" src="js/phonegap.facebook.inappbrowser.js"></script>
+``` 
+- You should have your main javascript file (also called in a script tag in your index.html). In it just configure and call FacebookInAppBrowser as the example below.
+
 
 Basic example
 -------------
@@ -44,4 +59,19 @@ FacebookInAppBrowser.invite(inviteText, successCallback, errorCallback);
 
 // Logout
 FacebookInAppBrowser.logout();
-```
+``` 
+If you are using jQuery or similar you can use it like: 
+```javascript
+// successCallback, errorCallback and inviteText previously defined
+$('#login').click(function() {
+	FacebookInAppBrowser.login(loginSuccessCallback, loginUnknowErrorCallback);
+});
+
+$('#invite').click(function() {
+	FacebookInAppBrowser.invite(inviteText, successCallback, errorCallback);
+}):
+
+$('#bye').click(function() {
+	FacebookInAppBrowser.logout();
+});
+``` 
