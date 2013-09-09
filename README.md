@@ -9,7 +9,7 @@ This repo is based on [this question and answer](http://stackoverflow.com/questi
 
 Until now "Login", "Logout" and "Invite(Request)" are available.
 
-**FacebookInAppBrowser is under development.** 
+**FacebookInAppBrowser is under development.**  
 **Phonegap v2.8 up to 3.0**
 
 Setup
