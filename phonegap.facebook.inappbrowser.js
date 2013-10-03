@@ -8,7 +8,7 @@
           permissions: ''
         }
 
-        , login: function(successCallback, finalCallback) {
+        , login: function(successCallback, finalCallback, userIdCallback) {
 
             if(this.settings.appId === '' || this.settings.redirectUrl === '') {
               console.log('[FacebookInAppBrowser] You need to set up your app id and redirect url.');
@@ -38,7 +38,9 @@
                     faceView.close();
 
                     if(typeof successCallback !== 'undefined' && typeof successCallback === 'function') {
-                      successCallback();
+                      setTimeout(function() {
+                        successCallback();
+                      }, 0);
                     }
 
                   }
@@ -59,15 +61,109 @@
               if(window.localStorage.getItem('accessToken') === null && userDenied === false) {
                 // InAppBrowser was closed and we don't have an app id
                 if(typeof finalCallback !== 'undefined' && typeof finalCallback === 'function') {
-                  finalCallback();
+                  setTimeout(function() {
+                    finalCallback();
+                  }, 0);
                 }
 
+              }
+
+              if(window.localStorage.getItem('accessToken') !== null) {
+                setTimeout(function() {
+                  FacebookInAppBrowser.getInfo(userIdCallback);
+                },0);
               }
 
               userDenied = false;
 
             });
 
+        }
+
+        , getInfo: function(afterCallback) {
+          if(window.localStorage.getItem('accessToken') === null) {
+            console.log('[FacebookInAppBrowser] No accessToken. Try login() first.');
+            return false;
+          }
+
+          var get_url  = "https://graph.facebook.com/me?access_token=" + window.localStorage.getItem('accessToken');
+
+          console.log('[FacebookInAppBrowser] getInfo request url: ' + get_url);
+
+          var face = window.open(get_url, '_blank', 'hidden=yes,location=no'),
+              callback = function(location) {
+                 console.log("[FacebookInAppBrowser] Event 'loadstop': " + JSON.stringify(location));
+
+                 if(location.url == get_url) {
+
+                    face.executeScript({
+                      code: "(function() { return JSON.parse('{'+document.body.textContent.match(/\{([^)]+)\}/)[1] +'}'); })();"
+                    }, function(response) {
+                      console.log(response);
+                      console.log("[FacebookInAppBrowser] User id: " + response[0].id);
+                      if(typeof response[0].id !== 'undefined') window.localStorage.setItem('uid', response[0].id);
+                      face.close();
+                      if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
+                        setTimeout(function() {
+                          afterCallback(response);
+                        }, 0);
+                      }
+                    });
+
+                  } else if(location.url !== 'about:blank') {
+                    if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
+                      setTimeout(function() {
+                        afterCallback(false);
+                      }, 0);
+                    }
+                    face.close();
+                  }
+              };
+
+          face.addEventListener('loadstop', callback);
+        }
+
+        , getPermissions: function(afterCallback) {
+          if(window.localStorage.getItem('uid') === null) {
+            console.log('[FacebookInAppBrowser] No user id. Try getInfo() first.');
+            return false;
+          }
+
+          var get_url  = "https://graph.facebook.com/"+ window.localStorage.getItem('uid') +"/permissions?access_token=" + window.localStorage.getItem('accessToken'),
+              permissions = null;
+
+          console.log('[FacebookInAppBrowser] getPermissions request url: ' + get_url);
+
+          var face = window.open(get_url, '_blank', 'hidden=yes,location=no'),
+              callback = function(location) {
+                 console.log("[FacebookInAppBrowser] Event 'loadstop': " + JSON.stringify(location));
+
+                 if(location.url == get_url) {
+
+                    face.executeScript({
+                      code: "(function() { return JSON.parse('{'+document.body.textContent.match(/\{([^)]+)\}/)[1] +'}'); })();"
+                    }, function(response) {
+                      if(response[0].data[0]) permissions = response[0].data[0];
+                      console.log("[FacebookInAppBrowser] Permissions: " + JSON.stringify(permissions));
+                      face.close();
+                      if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
+                        setTimeout(function() {
+                          afterCallback(permissions);
+                        }, 0);
+                      }
+                    });
+
+                  } else if(location.url !== 'about:blank') {
+                    if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
+                      setTimeout(function() {
+                        afterCallback(false);
+                      }, 0);
+                    }
+                    face.close();
+                  }
+              };
+
+          face.addEventListener('loadstop', callback);
         }
 
         , invite: function(inviteText, successCallback, errorCallback) {
@@ -102,7 +198,9 @@
                       faceView.close();
 
                       if(typeof successCallback !== 'undefined' && typeof successCallback === 'function') {
-                        successCallback();
+                        setTimeout(function() {
+                          successCallback();
+                        }, 0);
                       }
 
                    } else if(location.url.indexOf('error_code=') !== -1) {
@@ -110,7 +208,9 @@
                       faceView.close();
 
                       if(typeof errorCallback !== 'undefined' && typeof errorCallback === 'function') {
-                        errorCallback();
+                        setTimeout(function() {
+                          errorCallback();
+                        }, 0);
                       }
 
                    } else if(location.url === obj.settings.redirectUrl + '#_=_') {
@@ -138,13 +238,15 @@
 
                       // Do nothing
 
-                   } else if(location.url === FacebookInAppBrowser.settings.redirectUrl + '#_=_' || location.url === FacebookInAppBrowser.settings.redirectUrl) {
+                   } else if(location.url ===  FacebookInAppBrowser.settings.redirectUrl + '#_=_' || location.url === FacebookInAppBrowser.settings.redirectUrl) {
                       
                       face.close();
 
                       if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
 
-                        afterCallback();
+                        setTimeout(function() {
+                          afterCallback();
+                        }, 0);
 
                       }
 
