@@ -7,7 +7,7 @@ FacebookInAppBrowser uses the InAppBrowser Phonegap plugin and localStorage. Doe
 
 This repo is based on [this question and answer](http://stackoverflow.com/questions/16576977/is-there-any-facebook-plugin-for-phonegap-2-7-0) and on [this repo using ChildBrowser](https://github.com/purplecabbage/phonegap-plugins/tree/master/iPhone/ChildBrowser/FBConnectExample)
 
-Until now "Login", "Logout" and "Invite(Request)" are available.
+Until now "Login", "Logout", "Invite(Request)" "getInfo(/me)" and "getPermissions(/id/permissions)" are available.
 
 **FacebookInAppBrowser is under development.**  
 **Phonegap v2.8 up to 3.0**
@@ -43,6 +43,11 @@ var loginSuccessCallback = function() {
 	},
 	loginUnknowErrorCallback = function() {
 		alert('Do you want to try again?');
+	},
+	userIdCallback = function() {
+		// after the login is finished the getInfo() function is called in order to store the user id
+		// if you want to do something with the user id right after we have it, use this third callback
+		console.log(window.localStorage.getItem('uid'));
 	};
 
 FacebookInAppBrowser.login(loginSuccessCallback, loginUnknowErrorCallback);
@@ -57,6 +62,24 @@ var inviteText = 'Get to know my app!',
 	};
 
 FacebookInAppBrowser.invite(inviteText, successCallback, errorCallback);
+
+// Same logic of callbacks
+FacebookInAppBrowser.getInfo(function(response) {
+	if(response) {
+		var name = response.name,
+	            id = response.id,
+	            gender = response.gender;
+	            
+	        // check the response object to see all available data like email, first name, last name, etc
+	        console.log(response);
+	}
+});
+
+FacebookInAppBrowser.getPermissions(function(permissions) {
+	if(permissions) {
+		console.log(permissions.publish_actions, permissions);
+	}
+});
 
 // Logout
 FacebookInAppBrowser.logout();
