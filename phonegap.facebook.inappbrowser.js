@@ -138,7 +138,7 @@
 
                       // Do nothing
 
-                   } else if(location.url ===  this.settings.redirectUrl + '#_=_' || location.url === this.settings.redirectUrl) {
+                   } else if(location.url === FacebookInAppBrowser.settings.redirectUrl + '#_=_' || location.url === FacebookInAppBrowser.settings.redirectUrl) {
                       
                       face.close();
 
