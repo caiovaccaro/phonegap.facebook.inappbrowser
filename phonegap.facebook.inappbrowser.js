@@ -166,7 +166,7 @@
           face.addEventListener('loadstop', callback);
         }
 
-        , invite: function(inviteText, successCallback, errorCallback) {
+        , invite: function(inviteText, afterCallback) {
 
             if(typeof inviteText === 'undefined') {
               console.log('[FacebookInAppBrowser] inviteText is a required parameter.');
@@ -197,9 +197,9 @@
                       // Success
                       faceView.close();
 
-                      if(typeof successCallback !== 'undefined' && typeof successCallback === 'function') {
+                      if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
                         setTimeout(function() {
-                          successCallback();
+                          afterCallback(true);
                         }, 0);
                       }
 
@@ -207,9 +207,9 @@
                       // Error
                       faceView.close();
 
-                      if(typeof errorCallback !== 'undefined' && typeof errorCallback === 'function') {
+                      if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
                         setTimeout(function() {
-                          errorCallback();
+                          afterCallback(false);
                         }, 0);
                       }
 

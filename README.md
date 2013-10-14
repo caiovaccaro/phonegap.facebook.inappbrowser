@@ -50,28 +50,24 @@ var loginSuccessCallback = function() {
 		console.log(window.localStorage.getItem('uid'));
 	};
 
-FacebookInAppBrowser.login(loginSuccessCallback, loginUnknowErrorCallback);
+FacebookInAppBrowser.login(loginSuccessCallback, loginUnknowErrorCallback, userIdCallback);
 
 // Invite friends
-var inviteText = 'Get to know my app!',
-	successCallback = function() {
-		alert('Thanks! Your invite was sent.');
-	},
-	errorCallback = function() {
-		alert("Sorry, we couldn't send your invitation. Try again?");
-	};
-
-FacebookInAppBrowser.invite(inviteText, successCallback, errorCallback);
+FacebookInAppBrowser.invite('Get to know my app!', function(response) {
+	if(response) {
+		alert('success');
+	}
+});
 
 // Same logic of callbacks
 FacebookInAppBrowser.getInfo(function(response) {
 	if(response) {
 		var name = response.name,
-	            id = response.id,
-	            gender = response.gender;
+            id = response.id,
+            gender = response.gender;
 	            
-	        // check the response object to see all available data like email, first name, last name, etc
-	        console.log(response);
+        // check the response object to see all available data like email, first name, last name, etc
+        console.log(response);
 	}
 });
 
@@ -82,20 +78,22 @@ FacebookInAppBrowser.getPermissions(function(permissions) {
 });
 
 // Logout
-FacebookInAppBrowser.logout();
+FacebookInAppBrowser.logout(function() {
+	alert('bye');
+});
 ``` 
 If you are using jQuery or similar you can use it like: 
 ```javascript
-// successCallback, errorCallback and inviteText previously defined
+// callbacks already defined
 $('#login').click(function() {
-	FacebookInAppBrowser.login(loginSuccessCallback, loginUnknowErrorCallback);
+	FacebookInAppBrowser.login(loginSuccessCallback, loginUnknowErrorCallback, userIdCallback);
 });
 
 $('#invite').click(function() {
-	FacebookInAppBrowser.invite(inviteText, successCallback, errorCallback);
+	FacebookInAppBrowser.invite(inviteText, callback);
 }):
 
 $('#bye').click(function() {
-	FacebookInAppBrowser.logout();
+	FacebookInAppBrowser.logout(callback);
 });
 ``` 
