@@ -77,6 +77,16 @@ FacebookInAppBrowser.getPermissions(function(permissions) {
 	}
 });
 
+FacebookInAppBrowser.post(function({name: 'My post',
+									link: 'http://...',
+									message: 'Try this out',
+									picture: 'http://...',
+									description: 'Sent trough mobile app'}, function(response) {
+										if(response) {
+											console.log('post successful');
+										}
+									}));
+
 // Logout
 FacebookInAppBrowser.logout(function() {
 	alert('bye');
