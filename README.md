@@ -1,7 +1,7 @@
-phonegap.facebook.inappbrowser
+phonegap.facebook.inappbrowser Development Version
 ==============================
 
-Currently under development.
+Development of next version.
 
 FacebookInAppBrowser uses the InAppBrowser Phonegap plugin and localStorage. Does not require any SDK from Facebook or other libraries.
 
@@ -76,6 +76,16 @@ FacebookInAppBrowser.getPermissions(function(permissions) {
 		console.log(permissions.publish_actions, permissions);
 	}
 });
+
+FacebookInAppBrowser.post(function({name: 'My post',
+									link: 'http://...',
+									message: 'Try this out',
+									picture: 'http://...',
+									description: 'Sent trough mobile app'}, function(response) {
+										if(response) {
+											console.log('post successful');
+										}
+									}));
 
 // Logout
 FacebookInAppBrowser.logout(function() {
