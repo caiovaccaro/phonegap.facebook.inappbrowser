@@ -1,7 +1,6 @@
 phonegap.facebook.inappbrowser
 ==============================
 
-Currently under development.
 
 FacebookInAppBrowser uses the InAppBrowser Phonegap plugin and localStorage. Does not require any SDK from Facebook or other libraries.
 
@@ -9,7 +8,6 @@ This repo is based on [this question and answer](http://stackoverflow.com/questi
 
 Until now "Login", "Logout", "Invite(Request)" "getInfo(/me)" and "getPermissions(/id/permissions)" are available.
 
-**FacebookInAppBrowser is under development.**  
 **Phonegap v2.8 up to 3.0**
 
 Setup
