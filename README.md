@@ -37,20 +37,32 @@ FacebookInAppBrowser.settings.redirectUrl = 'http://example.com';
 FacebookInAppBrowser.settings.permissions = 'email';
 
 // Login(accessToken will be stored trough localStorage in 'accessToken');
-var loginSuccessCallback = function() {
-		alert('Login successful');
-		console.log(window.localStorage.getItem('accessToken'));
+FacebookInAppBrowser.login({
+	send: function() {
+		console.log('login opened');
 	},
-	loginUnknowErrorCallback = function() {
-		alert('Do you want to try again?');
+	success: function(access_token) {
+		console.log('done, access token: ' + access_token);
 	},
-	userIdCallback = function() {
-		// after the login is finished the getInfo() function is called in order to store the user id
-		// if you want to do something with the user id right after we have it, use this third callback
-		console.log(window.localStorage.getItem('uid'));
-	};
-
-FacebookInAppBrowser.login(loginSuccessCallback, loginUnknowErrorCallback, userIdCallback);
+	denied: function() {
+		console.log('user denied');
+	},
+	complete: function(access_token) {
+		console.log('window closed');
+		if(access_token) {
+			console.log(access_token);
+		} else {
+			console.log('no access token');
+		}
+	},
+	userId: function(userId) {
+		if(userId) {
+			console.log(userId);
+		} else {
+			console.log('no user id');
+		}
+	}
+});
 
 // Invite friends
 FacebookInAppBrowser.invite('Get to know my app!', function(response) {
