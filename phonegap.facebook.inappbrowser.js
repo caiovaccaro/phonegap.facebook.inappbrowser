@@ -52,17 +52,15 @@
             request.send();
         }
 
-        // , login: function(successCallback, finalCallback, userIdCallback) {
         /**
-         * [login description]
-         * @param  {Object} data {
-         *                         send: function() {},
-         *                         success: function() {},
-         *                         denied: function() {},
-         *                         complete: function() {},
-         *                         userId: function() {}
-         *                       }
-         * @return {[type]}      [description]
+         * @param  {Object} 
+         *          data {
+         *              send: function() {},
+         *              success: function() {},
+         *              denied: function() {},
+         *              complete: function() {},
+         *              userId: function() {}
+         *          }
          */
         , login: function(data) {
 
@@ -129,10 +127,17 @@
                   }, 0);
                 }
 
+              } else if(userDenied === false) {
+                  if(FacebookInAppBrowser.exists(data.complete, 'function')) {
+                      setTimeout(function() {
+                        data.complete(window.localStorage.getItem('accessToken'));
+                      }, 0);
+                    }
               }
 
               if(window.localStorage.getItem('accessToken') !== null) {
                 setTimeout(function() {
+                  var userIdCallback = FacebookInAppBrowser.exists(data.userId, 'function') ? data.userId : undefined;
                   FacebookInAppBrowser.getInfo(userIdCallback);
                 },0);
               }
