@@ -93,9 +93,9 @@
                     window.localStorage.setItem('accessToken', access_token);
                     faceView.close();
 
-                    if(FacebookInAppBrowser.exists(data.sucess, 'function')) {
+                    if(FacebookInAppBrowser.exists(data.success, 'function')) {
                       setTimeout(function() {
-                        data.sucess(access_token);
+                        data.success(access_token);
                       }, 0);
                     }
 
@@ -160,16 +160,15 @@
           FacebookInAppBrowser.ajax('GET', get_url, function(data) {
             if(data) {
               var response = JSON.parse(data);
-              console.log(response);
-              console.log("[FacebookInAppBrowser] User id: " + response[0].id);
-              if(typeof response[0].id !== 'undefined') window.localStorage.setItem('uid', response[0].id);
-              if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
+              console.log("[FacebookInAppBrowser] User id: " + response.id);
+              if(FacebookInAppBrowser.exists(response.id)) window.localStorage.setItem('uid', response.id);
+              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
                 setTimeout(function() {
                   afterCallback(response);
                 }, 0);
               }
             } else {
-              if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
+              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
                 setTimeout(function() {
                   afterCallback(false);
                 }, 0);
@@ -192,13 +191,13 @@
           FacebookInAppBrowser.ajax('GET', get_url, function(data) {
             if(data) {
               var response = JSON.parse(data);
-              if(response[0].data[0]) permissions = response[0].data[0];
+              if(response.data[0]) permissions = response.data[0];
               console.log("[FacebookInAppBrowser] Permissions: " + JSON.stringify(permissions));
-              if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
+              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
                 afterCallback(permissions);
               }
             } else {
-              if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
+              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
                 afterCallback(false);
               }
             }
@@ -206,15 +205,15 @@
         }
 
         , post: function(data, afterCallback) {
-          if(typeof data.name === 'undefined' ||
-             typeof data.link === 'undefined' ||
-             typeof data.description === 'undefined' ||
-             typeof data.picture === 'undefined' ||
-             typeof data.message === 'undefined') {
+          if(!FacebookInAppBrowser.exists(data.name) ||
+             !FacebookInAppBrowser.exists(data.link) ||
+             !FacebookInAppBrowser.exists(data.description) ||
+             !FacebookInAppBrowser.exists(data.picture) ||
+             !FacebookInAppBrowser.exists(data.message)) {
             console.log('[FacebookInAppBrowser] name, link, description, picture and message are necessary.');
             return false;
           }
-          if(typeof FacebookInAppBrowser.settings.appId === 'undefined' || typeof window.localStorage.getItem('accessToken') === 'undefined' || window.localStorage.getItem('accessToken') === null) {
+          if(!FacebookInAppBrowser.exists(FacebookInAppBrowser.settings.appId) || !FacebookInAppBrowser.exists(window.localStorage.getItem('accessToken')) || window.localStorage.getItem('accessToken') === null) {
             console.log('[FacebookInAppBrowser] You need to set your app id in FacebookInAppBrowser.settings.appId and have a accessToken (try login first)');
             return false;
           }
@@ -226,18 +225,17 @@
           FacebookInAppBrowser.ajax('POST', post_url, function(data) {
             if(data) {
               var response = JSON.parse(data);
-
               if(response.id) {
-                  if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
+                  if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
                     afterCallback(response.id);
                   }
               } else {
-                if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
+                if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
                   afterCallback(false);
                 }
               }
             } else {
-              if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
+              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
                 afterCallback(false);
               }
             }
@@ -245,7 +243,6 @@
         }
 
         , invite: function(inviteText, afterCallback) {
-
             if(typeof inviteText === 'undefined') {
               console.log('[FacebookInAppBrowser] inviteText is a required parameter.');
               return false;
@@ -275,7 +272,7 @@
                       // Success
                       faceView.close();
 
-                      if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
+                      if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
                         setTimeout(function() {
                           afterCallback(true);
                         }, 0);
@@ -285,7 +282,7 @@
                       // Error
                       faceView.close();
 
-                      if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
+                      if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
                         setTimeout(function() {
                           afterCallback(false);
                         }, 0);
@@ -316,11 +313,11 @@
 
                       // Do nothing
 
-                   } else if(location.url ===  FacebookInAppBrowser.settings.redirectUrl + '#_=_' || location.url === FacebookInAppBrowser.settings.redirectUrl) {
+                   } else if(location.url ===  FacebookInAppBrowser.settings.redirectUrl + '#_=_' || location.url === FacebookInAppBrowser.settings.redirectUrl || location.url === FacebookInAppBrowser.settings.redirectUrl + '/') {
                       
                       face.close();
 
-                      if(typeof afterCallback !== 'undefined' && typeof afterCallback === 'function') {
+                      if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
 
                         setTimeout(function() {
                           afterCallback();

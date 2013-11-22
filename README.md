@@ -57,7 +57,7 @@ FacebookInAppBrowser.login({
 	},
 	userId: function(userId) {
 		if(userId) {
-			console.log(userId);
+			console.log(JSON.stringify(userId));
 		} else {
 			console.log('no user id');
 		}
@@ -79,7 +79,7 @@ FacebookInAppBrowser.getInfo(function(response) {
             gender = response.gender;
 	            
         // check the response object to see all available data like email, first name, last name, etc
-        console.log(response);
+        console.log(JSON.stringify(response));
 	}
 });
 
@@ -89,15 +89,15 @@ FacebookInAppBrowser.getPermissions(function(permissions) {
 	}
 });
 
-FacebookInAppBrowser.post(function({name: 'My post',
-									link: 'http://...',
+FacebookInAppBrowser.post({name: 'My post',
+									link: 'http://frop.me',
 									message: 'Try this out',
-									picture: 'http://...',
+									picture: 'http://caiovaccaro.com.br/wp-content/uploads/2013/10/frop01.jpg',
 									description: 'Sent trough mobile app'}, function(response) {
 										if(response) {
 											console.log('post successful');
 										}
-									}));
+									});
 
 // Logout
 FacebookInAppBrowser.logout(function() {
