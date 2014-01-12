@@ -2,22 +2,64 @@
 
     FacebookInAppBrowser = {
 
+        /**
+         * Basic Configuration
+         * @type {Object}
+         */
         settings: {
-          appId: '',
-          redirectUrl: '',
-          permissions: ''
-        }
 
-        , exists: function(test, type) {
+          /**
+           * Your Facebook App Id
+           * @type {String}
+           */
+          appId: '',
+
+          /**
+           * Redirect URL for "inside" script
+           * identification. Can be your main URL
+           * @type {String}
+           */
+          redirectUrl: '',
+
+          /**
+           * Which permissions you will request
+           * from your user. Facebook default is 'email'.
+           *
+           * Reference: https://developers.facebook.com/docs/reference/login/
+           *
+           * Separate by comma and no spaces.
+           * @example 'email,publish_actions'
+           * 
+           * @type {String}
+           */
+          permissions: ''
+        },
+
+        /**
+         * Inner function
+         * Tests if parameter exists and
+         * if it is of the type given.
+         * @param  {Variable} test    Variable you want to test
+         * @param  {String}   type    @example 'function'
+         * @return {Boolean}
+         */
+        exists: function(test, type) {
           if(typeof type !== 'undefined') {
             if((typeof test !== 'undefined' && test !== '') && typeof test === type) return true;
           } else {
             if(typeof test !== 'undefined' && test !== '') return true;
           }
           return false;
-        }
+        },
 
-        , ajax: function(type, url, callback, data) {
+        /**
+         * Inner AJAX handler.
+         * @param  {String}   type     GET or POST
+         * @param  {String}   url      Request URL
+         * @param  {Function} callback Success/Error callback
+         * @param  {Object}   data     Data to send
+         */
+        ajax: function(type, url, callback, data) {
             if(!FacebookInAppBrowser.exists(type) || !FacebookInAppBrowser.exists(url) || !FacebookInAppBrowser.exists(callback)) {
               console.log('[FacebookInAppBrowser] type, url and callback parameters are necessary.');
               return false;
@@ -50,9 +92,18 @@
                 }
             };
             request.send();
-        }
+        },
 
         /**
+         * Open and handle Facebook Login.
+         * 
+         * Callbacks for:
+         * # Send (open InAppBrowser)
+         * # Success
+         * # User denied
+         * # Complete regardless of result
+         * # When User Id is received
+         * 
          * @param  {Object} 
          *          data {
          *              send: function() {},
@@ -62,7 +113,7 @@
          *              userId: function() {}
          *          }
          */
-        , login: function(data) {
+        login: function(data) {
 
             if(!FacebookInAppBrowser.exists(this.settings.appId) || !FacebookInAppBrowser.exists(this.settings.redirectUrl)) {
               console.log('[FacebookInAppBrowser] You need to set up your app id and redirect url.');
@@ -143,12 +194,16 @@
               }
 
               userDenied = false;
-
             });
+        },
 
-        }
-
-        , getInfo: function(afterCallback) {
+        /**
+         * Get User Info
+         * User needs to be logged in.
+         * 
+         * @param  {Function} afterCallback Success/Error callback
+         */
+        getInfo: function(afterCallback) {
           if(window.localStorage.getItem('accessToken') === null) {
             console.log('[FacebookInAppBrowser] No accessToken. Try login() first.');
             return false;
@@ -175,9 +230,15 @@
               }
             }
           });
-        }
+        },
 
-        , getPermissions: function(afterCallback) {
+        /**
+         * Get permissions that user has or not given
+         * Needs to be logged in and have User Id
+         * 
+         * @param  {Function} afterCallback Success/Error callback
+         */
+        getPermissions: function(afterCallback) {
           if(window.localStorage.getItem('uid') === null) {
             console.log('[FacebookInAppBrowser] No user id. Try getInfo() first.');
             return false;
@@ -202,9 +263,16 @@
               }
             }
           });
-        }
+        },
 
-        , post: function(data, afterCallback) {
+        /**
+         * Post to User Wall
+         * Needs to be logged in.
+         * 
+         * @param  {Object} data              name, link, description, picture, message
+         * @param  {Function} afterCallback   Success/Error callback
+         */
+        post: function(data, afterCallback) {
           if(!FacebookInAppBrowser.exists(data.name) ||
              !FacebookInAppBrowser.exists(data.link) ||
              !FacebookInAppBrowser.exists(data.description) ||
@@ -240,9 +308,14 @@
               }
             }
           }, post_data);
-        }
+        },
 
-        , invite: function(inviteText, afterCallback) {
+        /**
+         * Open Invitation Box
+         * @param  {String} inviteText    
+         * @param  {Function} afterCallback Success/Error callback
+         */
+        invite: function(inviteText, afterCallback) {
             if(typeof inviteText === 'undefined') {
               console.log('[FacebookInAppBrowser] inviteText is a required parameter.');
               return false;
@@ -265,7 +338,6 @@
                    console.log("[FacebookInAppBrowser] Event 'loadstart': " + JSON.stringify(location));
 
                    if(location.url == request_url) {
-
                       // Do nothing
 
                    } else if (location.url.indexOf("?request=") !== -1) {
@@ -295,14 +367,17 @@
                    }
 
                 };
-
             faceView = window.open(request_url, '_blank', 'location=no');
             faceView.addEventListener('loadstart', callback);
+        },
 
-        }
-
-        , logout: function(afterCallback) {
-
+        /**
+         * Logout User
+         * From Facebook and your app
+         * 
+         * @param  {Function} afterCallback Success/Error callback
+         */
+        logout: function(afterCallback) {
             var logout_url = encodeURI("https://www.facebook.com/logout.php?next="  + this.settings.redirectUrl + "&access_token=" + window.localStorage.getItem('accessToken'));
 
             var face = window.open(logout_url, '_blank', 'hidden=yes,location=no'),
@@ -310,29 +385,20 @@
                    console.log("[FacebookInAppBrowser] Event 'loadstart': " + JSON.stringify(location));
 
                    if(location.url == logout_url) {
-
                       // Do nothing
 
                    } else if(location.url ===  FacebookInAppBrowser.settings.redirectUrl + '#_=_' || location.url === FacebookInAppBrowser.settings.redirectUrl || location.url === FacebookInAppBrowser.settings.redirectUrl + '/') {
-                      
                       face.close();
 
                       if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-
                         setTimeout(function() {
                           afterCallback();
                         }, 0);
-
                       }
-
                    }
-
                 };
-
             face.addEventListener('loadstart', callback);
-
         }
-
     };
-
+    
 }).call(this);
