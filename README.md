@@ -13,8 +13,8 @@ Setup
 -----
 
 To use FacebookInAppBrowser you need to follow these steps:
-- Enable InAppBrowser in your Phonegap application as described in ["InAppBrowser - Accessing the Feature"](http://docs.phonegap.com/en/3.0.0/cordova_inappbrowser_inappbrowser.md.html#InAppBrowser). Instructions are the same for 2.8 up to 3.0 except for the command line interface. If you have 3.0 you need to install the InAppBrowser plugin trough the command line.
-- Enable Storage in your Phonegap application as described in ["Storage - Accessing the Feature"](http://docs.phonegap.com/en/3.0.0/cordova_storage_storage.md.html#Storage). If you have 3.0 Storage is enabled by default.
+- Enable InAppBrowser in your Phonegap application as described in ["InAppBrowser - Accessing the Feature"](http://docs.phonegap.com/en/3.3.0/cordova_inappbrowser_inappbrowser.md.html#InAppBrowser). Instructions are the same for 2.8 up to 3.x except for the command line interface. If you have 3.x you need to install the InAppBrowser plugin trough the command line.
+- Enable Storage in your Phonegap application as described in ["Storage - Accessing the Feature"](http://docs.phonegap.com/en/3.3.0/cordova_storage_storage.md.html#Storage). If you have 3.x Storage is enabled by default.
 - Download the 'phonegap.facebook.inappbrowser.js' file and place it inside your project (for example in www/js/)
 - In your index.html place a script tag calling the javascript file:
 
