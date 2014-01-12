@@ -1,4 +1,4 @@
-phonegap.facebook.inappbrowser
+phonegap.facebook.inappbrowser v 0.9
 ==============================
 
 FacebookInAppBrowser uses the InAppBrowser Phonegap plugin and localStorage. Does not require any SDK from Facebook or other libraries.
