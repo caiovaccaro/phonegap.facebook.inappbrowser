@@ -1,7 +1,5 @@
-phonegap.facebook.inappbrowser Development Version
+phonegap.facebook.inappbrowser
 ==============================
-
-Development of next version.
 
 FacebookInAppBrowser uses the InAppBrowser Phonegap plugin and localStorage. Does not require any SDK from Facebook or other libraries.
 
@@ -9,7 +7,7 @@ This repo is based on [this question and answer](http://stackoverflow.com/questi
 
 Until now "Login", "Logout", "Invite(Request)", "post(/feed)", "getInfo(/me)" and "getPermissions(/id/permissions)" are available.
 
-**Phonegap v2.8 up to 3.1**
+**Phonegap v2.8 up to 3.x**
 
 Setup
 -----
@@ -105,16 +103,16 @@ FacebookInAppBrowser.logout(function() {
 ``` 
 If you are using jQuery or similar you can use it like: 
 ```javascript
-// callbacks already defined
+// callbacks as before
 $('#login').click(function() {
-	FacebookInAppBrowser.login(loginSuccessCallback, loginUnknowErrorCallback, userIdCallback);
+	FacebookInAppBrowser.login(...);
 });
 
 $('#invite').click(function() {
-	FacebookInAppBrowser.invite(inviteText, callback);
+	FacebookInAppBrowser.invite(...);
 }):
 
 $('#bye').click(function() {
-	FacebookInAppBrowser.logout(callback);
+	FacebookInAppBrowser.logout(...);
 });
 ``` 
