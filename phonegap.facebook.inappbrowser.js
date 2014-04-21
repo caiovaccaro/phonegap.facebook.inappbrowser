@@ -166,7 +166,14 @@
                 },
                 userDenied = false;
 
-            faceView = window.open(authorize_url, '_blank', 'location=no');
+            //faceView = window.open(authorize_url, '_blank', 'location=no');
+            //modified by jcoltrane to hide the window because a white page is shown till the fb login page is actually loaded - hidden=yes added
+            faceView = window.open(authorize_url, '_blank', 'location=no,hidden=yes');
+            //we now have to listen to loadstop so we show the window once the page is loaded
+            faceView.addEventListener('loadstop', function(){
+												faceView.show();		
+										});
+            //finished changes by jcoltrane to reduce white page shown on facebook login page load
             faceView.addEventListener('loadstart', callback);
             faceView.addEventListener('exit', function() {
 
