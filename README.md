@@ -1,446 +1,129 @@
-;(function() {
+phonegap.facebook.inappbrowser v 0.9
+==============================
 
-    FacebookInAppBrowser = {
+FacebookInAppBrowser uses the InAppBrowser Phonegap plugin and localStorage. Does not require any SDK from Facebook or other libraries.
 
-        /**
-         * Basic Configuration
-         * @type {Object}
-         */
-        settings: {
+This repo is based on [this question and answer](http://stackoverflow.com/questions/16576977/is-there-any-facebook-plugin-for-phonegap-2-7-0) and on [this repo using ChildBrowser](https://github.com/purplecabbage/phonegap-plugins/tree/master/iPhone/ChildBrowser/FBConnectExample)
 
-          /**
-           * Your Facebook App Id
-           * @type {String}
-           */
-          appId: '',
-          
-          /**
-           * Your Facebook App Secret
-           * @type {String}
-           */
-          appSecret: '',
+Until now "Login", "Logout", "Invite(Request)", "post(/feed)", "getInfo(/me)" and "getPermissions(/id/permissions)" are available.
 
-          /**
-           * Redirect URL for "inside" script
-           * identification. Can be your main URL
-           * @type {String}
-           */
-          redirectUrl: '',
+**Phonegap v2.8 up to 3.x**
 
-          /**
-           * Which permissions you will request
-           * from your user. Facebook default is 'email'.
-           *
-           * Reference: https://developers.facebook.com/docs/reference/login/
-           *
-           * Separate by comma and no spaces.
-           * @example 'email,publish_actions'
-           * 
-           * @type {String}
-           */
-          permissions: ''
-        },
+Setup
+-----
 
-        /**
-         * Inner function
-         * Tests if parameter exists and
-         * if it is of the type given.
-         * @param  {Variable} test    Variable you want to test
-         * @param  {String}   type    @example 'function'
-         * @return {Boolean}
-         */
-        exists: function(test, type) {
-          if(typeof type !== 'undefined') {
-            if((typeof test !== 'undefined' && test !== '') && typeof test === type) return true;
-          } else {
-            if(typeof test !== 'undefined' && test !== '') return true;
-          }
-          return false;
-        },
+To use FacebookInAppBrowser you need to follow these steps:
+- Enable InAppBrowser in your Phonegap application as described in ["InAppBrowser - Accessing the Feature"](http://docs.phonegap.com/en/3.3.0/cordova_inappbrowser_inappbrowser.md.html#InAppBrowser). Instructions are the same for 2.8 up to 3.x except for the command line interface. If you have 3.x you need to install the InAppBrowser plugin trough the command line.
+- Enable Storage in your Phonegap application as described in ["Storage - Accessing the Feature"](http://docs.phonegap.com/en/3.3.0/cordova_storage_storage.md.html#Storage). If you have 3.x Storage is enabled by default.
+- Download the 'phonegap.facebook.inappbrowser.js' file and place it inside your project (for example in www/js/)
+- In your index.html place a script tag calling the javascript file:
 
-        /**
-         * Inner AJAX handler.
-         * @param  {String}   type     GET or POST
-         * @param  {String}   url      Request URL
-         * @param  {Function} callback Success/Error callback
-         * @param  {Object}   data     Data to send
-         */
-        ajax: function(type, url, callback, data) {
-            if(!FacebookInAppBrowser.exists(type) || !FacebookInAppBrowser.exists(url) || !FacebookInAppBrowser.exists(callback)) {
-              console.log('[FacebookInAppBrowser] type, url and callback parameters are necessary.');
-              return false;
-            }
-            if(!FacebookInAppBrowser.exists(callback, 'function')) {
-              console.log('[FacebookInAppBrowser] callback must be a function.');
-              return false;
-            }
+```html
+<script type="text/javascript" src="js/phonegap.facebook.inappbrowser.js"></script>
+``` 
+- You should have your main javascript file (also called in a script tag in your index.html). In it just configure and call FacebookInAppBrowser as the example below.
 
-            var request = new XMLHttpRequest();
-            request.open(type, url, true);
-            if(data) {
-              request.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-              request.setRequestHeader("Content-length", data.length);
-              request.setRequestHeader("Connection", "close");
-              request.send(data);
-            }
-            request.onreadystatechange = function() {
-                if (request.readyState == 4) {
-                    if (request.status == 200 || request.status === 0) {
-                        var data = request.responseText;
-                        if(data) {
-                          callback(data);
-                        } else {
-                          callback(false);
-                        }
-                    } else {
-                      callback(false);
-                    }
-                }
-            };
-            request.send();
-        },
 
-        /**
-         * Open and handle Facebook Login.
-         * 
-         * Callbacks for:
-         * # Send (open InAppBrowser)
-         * # Success
-         * # User denied
-         * # Complete regardless of result
-         * # When User Id is received
-         * 
-         * @param  {Object} 
-         *          data {
-         *              send: function() {},
-         *              success: function() {},
-         *              denied: function() {},
-         *              complete: function() {},
-         *              userId: function() {}
-         *          }
-         */
-        login: function(data) {
+Basic example
+-------------
 
-            if(!FacebookInAppBrowser.exists(this.settings.appId) || !FacebookInAppBrowser.exists(this.settings.redirectUrl)) {
-              console.log('[FacebookInAppBrowser] You need to set up your app id and redirect url.');
-              return false;
-            }
+```javascript
+// Settings
+FacebookInAppBrowser.settings.appId = '123456789';
+FacebookInAppBrowser.settings.appSecret = 'yourAppSecret';
+FacebookInAppBrowser.settings.redirectUrl = 'http://example.com';
+FacebookInAppBrowser.settings.permissions = 'email';
 
-            var authorize_url  = "https://m.facebook.com/dialog/oauth?";
-                authorize_url += "client_id=" + this.settings.appId;
-                authorize_url += "&redirect_uri=" + this.settings.redirectUrl;
-                authorize_url += "&display=touch";
-                authorize_url += "&response_type=token";
-                authorize_url += "&type=user_agent";
-                
-                if(FacebookInAppBrowser.exists(this.settings.permissions)) {
-                  authorize_url += "&scope=" + this.settings.permissions;
-                }
+// Login(accessToken will be stored trough localStorage in 'accessToken');
+FacebookInAppBrowser.login({
+	send: function() {
+		console.log('login opened');
+	},
+	success: function(access_token) {
+		console.log('done, access token: ' + access_token);
+	},
+	denied: function() {
+		console.log('user denied');
+	},
+	complete: function(access_token) {
+		console.log('window closed');
+		if(access_token) {
+			console.log(access_token);
+		} else {
+			console.log('no access token');
+		}
+	},
+	userId: function(userId) {
+		if(userId) {
+			console.log(JSON.stringify(userId));
+		} else {
+			console.log('no user id');
+		}
+	}
+});
 
-            if(FacebookInAppBrowser.exists(data.send, 'function')) data.send();
+// Renew access token
+FacebookInAppBrowser.requestNewAccessToken(function(response) {
+	if(response) {
+		// access token
+		// also stored with localStorage
+		console.log(response);
+	}
+});
 
-            var faceView,
-                callback = function(location) {
-                  console.log("[FacebookInAppBrowser] Event 'loadstart': " + JSON.stringify(location));
 
-                  if (location.url.indexOf("access_token") !== -1) {
-                    // Success
-                    var access_token = location.url.match(/access_token=(.*)$/)[1].split('&expires_in')[0];
-                    console.log("[FacebookInAppBrowser] Logged in. Token: " + access_token);
-                    window.localStorage.setItem('accessToken', access_token);
-                    faceView.close();
+// Invite friends
+FacebookInAppBrowser.invite('Get to know my app!', function(response) {
+	if(response) {
+		alert('success');
+	}
+});
 
-                    if(FacebookInAppBrowser.exists(data.success, 'function')) {
-                      setTimeout(function() {
-                        data.success(access_token);
-                      }, 0);
-                    }
+// Same logic of callbacks
+FacebookInAppBrowser.getInfo(function(response) {
+	if(response) {
+	    var name = response.name,
+                id = response.id,
+                gender = response.gender;
+	              
+           // check the response object to see all available data like email, first name, last name, etc
+           console.log(JSON.stringify(response));
+	}
+});
 
-                  }
+FacebookInAppBrowser.getPermissions(function(permissions) {
+	if(permissions) {
+		console.log(permissions.publish_actions, permissions);
+	}
+});
 
-                  if (location.url.indexOf("error_reason=user_denied") !== -1) {
-                    // User denied
-                    userDenied = true;
-                    if(FacebookInAppBrowser.exists(data.denied, 'function')) {
-                      setTimeout(function() {
-                        data.denied();
-                      }, 0);
-                    }
-                    console.log('[FacebookInAppBrowser] User denied Facebook Login.');
-                    faceView.close();
-                  }
-                },
-                userDenied = false;
+FacebookInAppBrowser.post({name: 'My post',
+			               link: 'http://frop.me',
+			               message: 'Try this out',
+			               picture: 'http://caiovaccaro.com.br/wp-content/uploads/2013/10/frop01.jpg',
+			               description: 'Sent trough mobile app'}, function(response) {
+			                   if(response) {
+			                       console.log('post successful');
+			                   }
+			               });
 
-            // Thx to @jcoltrane
-            faceView = window.open(authorize_url, '_blank', 'location=no,hidden=yes');
-            faceView.addEventListener('loadstop', function(){
- 		faceView.show();		
-	    });
+// Logout
+FacebookInAppBrowser.logout(function() {
+	alert('bye');
+});
+``` 
+If you are using jQuery or similar you can use it like: 
+```javascript
+// callbacks as before
+$('#login').click(function() {
+	FacebookInAppBrowser.login(...);
+});
 
-            faceView.addEventListener('loadstart', callback);
-            faceView.addEventListener('exit', function() {
+$('#invite').click(function() {
+	FacebookInAppBrowser.invite(...);
+}):
 
-              if(window.localStorage.getItem('accessToken') === null && userDenied === false) {
-                // InAppBrowser was closed and we don't have an app id
-                if(FacebookInAppBrowser.exists(data.complete, 'function')) {
-                  setTimeout(function() {
-                    data.complete(false);
-                  }, 0);
-                }
-
-              } else if(userDenied === false) {
-                  if(FacebookInAppBrowser.exists(data.complete, 'function')) {
-                      setTimeout(function() {
-                        data.complete(window.localStorage.getItem('accessToken'));
-                      }, 0);
-                    }
-              }
-
-              if(window.localStorage.getItem('accessToken') !== null) {
-                setTimeout(function() {
-                  var userIdCallback = FacebookInAppBrowser.exists(data.userId, 'function') ? data.userId : undefined;
-                  FacebookInAppBrowser.getInfo(userIdCallback);
-                },0);
-              }
-
-              userDenied = false;
-            });
-        },
-        
-        graphApi: function(graphPath, afterCallback) {
-          if(window.localStorage.getItem('accessToken') === null) {
-            console.log('[FacebookInAppBrowser] No accessToken. Try login() first.');
-            return false;
-          }
-          if(!FacebookInAppBrowser.exists(graphPath)) {
-            console.log('[FacebookInAppBrowser] graphPath is a necessary parameter.');
-            return false;
-          }
-
-          var get_url  = "https://graph.facebook.com"+ graphPath +"?access_token=" + window.localStorage.getItem('accessToken');
-          console.log('[FacebookInAppBrowser] graphPath request url: ' + get_url);
-
-          FacebookInAppBrowser.ajax('GET', get_url, function(data) {
-            if(data) {
-              var response = JSON.parse(data);
-              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-                setTimeout(function() {
-                  afterCallback(response);
-                }, 0);
-              }
-            } else {
-              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-                setTimeout(function() {
-                  afterCallback(false);
-                }, 0);
-              }
-            }
-          });
-        },
-        
-        /**
-         * Get User Info
-         * User needs to be logged in.
-         * 
-         * @param  {Function} afterCallback Success/Error callback
-         */
-        getInfo: function(afterCallback) {
-          if(window.localStorage.getItem('accessToken') === null) {
-            console.log('[FacebookInAppBrowser] No accessToken. Try login() first.');
-            return false;
-          }
-
-          var get_url  = "https://graph.facebook.com/me?access_token=" + window.localStorage.getItem('accessToken');
-          console.log('[FacebookInAppBrowser] getInfo request url: ' + get_url);
-
-          FacebookInAppBrowser.ajax('GET', get_url, function(data) {
-            if(data) {
-              var response = JSON.parse(data);
-              console.log("[FacebookInAppBrowser] User id: " + response.id);
-              if(FacebookInAppBrowser.exists(response.id)) window.localStorage.setItem('uid', response.id);
-              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-                setTimeout(function() {
-                  afterCallback(response);
-                }, 0);
-              }
-            } else {
-              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-                setTimeout(function() {
-                  afterCallback(false);
-                }, 0);
-              }
-            }
-          });
-        },
-
-        /**
-         * Get permissions that user has or not given
-         * Needs to be logged in and have User Id
-         * 
-         * @param  {Function} afterCallback Success/Error callback
-         */
-        getPermissions: function(afterCallback) {
-          if(window.localStorage.getItem('uid') === null) {
-            console.log('[FacebookInAppBrowser] No user id. Try getInfo() first.');
-            return false;
-          }
-
-          var get_url  = "https://graph.facebook.com/"+ window.localStorage.getItem('uid') +"/permissions?access_token=" + window.localStorage.getItem('accessToken'),
-              permissions = null;
-
-          console.log('[FacebookInAppBrowser] getPermissions request url: ' + get_url);
-
-          FacebookInAppBrowser.ajax('GET', get_url, function(data) {
-            if(data) {
-              var response = JSON.parse(data);
-              if(response.data[0]) permissions = response.data[0];
-              console.log("[FacebookInAppBrowser] Permissions: " + JSON.stringify(permissions));
-              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-                afterCallback(permissions);
-              }
-            } else {
-              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-                afterCallback(false);
-              }
-            }
-          });
-        },
-
-        /**
-         * Post to User Wall
-         * Needs to be logged in.
-         * 
-         * @param  {Object} data              name, link, description, picture, message
-         * @param  {Function} afterCallback   Success/Error callback
-         */
-        post: function(data, afterCallback) {
-          if(!FacebookInAppBrowser.exists(data.name) ||
-             !FacebookInAppBrowser.exists(data.link) ||
-             !FacebookInAppBrowser.exists(data.description) ||
-             !FacebookInAppBrowser.exists(data.picture) ||
-             !FacebookInAppBrowser.exists(data.message)) {
-            console.log('[FacebookInAppBrowser] name, link, description, picture and message are necessary.');
-            return false;
-          }
-          if(!FacebookInAppBrowser.exists(FacebookInAppBrowser.settings.appId) || !FacebookInAppBrowser.exists(window.localStorage.getItem('accessToken')) || window.localStorage.getItem('accessToken') === null) {
-            console.log('[FacebookInAppBrowser] You need to set your app id in FacebookInAppBrowser.settings.appId and have a accessToken (try login first)');
-            return false;
-          }
-
-          var post_url = "https://graph.facebook.com/"+ window.localStorage.getItem('uid') +"/feed",
-              post_data = 'app_id='+FacebookInAppBrowser.settings.appId+'&access_token='+window.localStorage.getItem('accessToken')+'&redirect_uri='+FacebookInAppBrowser.settings.redirectUrl+
-                          '&name='+data.name+'&link='+data.link+'&description='+data.description+'&picture='+data.picture+'&message='+data.message;
-
-          FacebookInAppBrowser.ajax('POST', post_url, function(data) {
-            if(data) {
-              var response = JSON.parse(data);
-              if(response.id) {
-                  if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-                    afterCallback(response.id);
-                  }
-              } else {
-                if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-                  afterCallback(false);
-                }
-              }
-            } else {
-              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-                afterCallback(false);
-              }
-            }
-          }, post_data);
-        },
-
-        /**
-         * Open Invitation Box
-         * @param  {String} inviteText    
-         * @param  {Function} afterCallback Success/Error callback
-         */
-        invite: function(inviteText, afterCallback) {
-            if(typeof inviteText === 'undefined') {
-              console.log('[FacebookInAppBrowser] inviteText is a required parameter.');
-              return false;
-            }
-
-            var obj = this;
-
-            var request_url  = "https://m.facebook.com/dialog/apprequests?";
-                request_url += "app_id=" + this.settings.appId;
-                request_url += "&redirect_uri=" + this.settings.redirectUrl;
-                request_url += "&display=touch";
-                request_url += "&message=" + inviteText;
-
-                request_url = encodeURI(request_url);
-
-            console.log('[FacebookInAppBrowser] Invite, URL: ' + request_url);
-
-            var faceView,
-                callback = function(location) {
-                   console.log("[FacebookInAppBrowser] Event 'loadstart': " + JSON.stringify(location));
-
-                   if(location.url == request_url) {
-                      // Do nothing
-
-                   } else if (location.url.indexOf("?request=") !== -1) {
-                      // Success
-                      faceView.close();
-
-                      if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-                        setTimeout(function() {
-                          afterCallback(true);
-                        }, 0);
-                      }
-
-                   } else if(location.url.indexOf('error_code=') !== -1) {
-                      // Error
-                      faceView.close();
-
-                      if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-                        setTimeout(function() {
-                          afterCallback(false);
-                        }, 0);
-                      }
-
-                   } else if(location.url === obj.settings.redirectUrl + '#_=_') {
-                      // User clicked Cancel
-                      face.close();
-
-                   }
-
-                };
-            faceView = window.open(request_url, '_blank', 'location=no');
-            faceView.addEventListener('loadstart', callback);
-        },
-
-        /**
-         * Logout User
-         * From Facebook and your app
-         * 
-         * @param  {Function} afterCallback Success/Error callback
-         */
-        logout: function(afterCallback) {
-            var logout_url = encodeURI("https://www.facebook.com/logout.php?next="  + this.settings.redirectUrl + "&access_token=" + window.localStorage.getItem('accessToken'));
-
-            var face = window.open(logout_url, '_blank', 'hidden=yes,location=no'),
-                callback = function(location) {
-                   console.log("[FacebookInAppBrowser] Event 'loadstart': " + JSON.stringify(location));
-
-                   if(location.url == logout_url) {
-                      // Do nothing
-
-                   } else if(location.url ===  FacebookInAppBrowser.settings.redirectUrl + '#_=_' || location.url === FacebookInAppBrowser.settings.redirectUrl || location.url === FacebookInAppBrowser.settings.redirectUrl + '/') {
-                      face.close();
-
-                      if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-                        setTimeout(function() {
-                          afterCallback();
-                        }, 0);
-                      }
-                   }
-                };
-            face.addEventListener('loadstart', callback);
-        }
-    };
-    
-}).call(this);
+$('#bye').click(function() {
+	FacebookInAppBrowser.logout(...);
+});
+``` 

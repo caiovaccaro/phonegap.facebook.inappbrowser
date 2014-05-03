@@ -208,37 +208,85 @@
             });
         },
         
-        graphApi: function(graphPath, afterCallback) {
-          if(window.localStorage.getItem('accessToken') === null) {
-            console.log('[FacebookInAppBrowser] No accessToken. Try login() first.');
-            return false;
-          }
-          if(!FacebookInAppBrowser.exists(graphPath)) {
-            console.log('[FacebookInAppBrowser] graphPath is a necessary parameter.');
-            return false;
-          }
-
-          var get_url  = "https://graph.facebook.com"+ graphPath +"?access_token=" + window.localStorage.getItem('accessToken');
-          console.log('[FacebookInAppBrowser] graphPath request url: ' + get_url);
-
-          FacebookInAppBrowser.ajax('GET', get_url, function(data) {
-            if(data) {
-              var response = JSON.parse(data);
-              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-                setTimeout(function() {
-                  afterCallback(response);
-                }, 0);
-              }
-            } else {
-              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
-                setTimeout(function() {
-                  afterCallback(false);
-                }, 0);
-              }
+        _getNewAccessToken: function(code, afterCallback) {
+           if(!FacebookInAppBrowser.exists(code)) {
+              console.log('[FacebookInAppBrowser] The code parameter is necessary.');
+              return false;
             }
-          });
+          
+           var get_url = "https://graph.facebook.com/oauth/access_token?";
+                get_url += "code=" + code;
+          get_url += "&client_id=" + this.settings.appId;
+                get_url += "&redirect_uri=" + this.settings.redirectUrl;
+                    
+            FacebookInAppBrowser.ajax('GET', get_url, function(data) {
+              if(data) {
+                   var response = JSON.parse(data);
+             console.log("[FacebookInAppBrowser] Facebook responded with: " + JSON.stringify(response));
+             if(response.access_token) {
+              window.localStorage.setItem('accessToken', response.access_token);
+              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
+               setTimeout(function() {
+                  afterCallback(response.access_token);
+                     }, 0);
+              }
+             } else {
+              console.log("[FacebookInAppBrowser] No access token.");
+              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
+               setTimeout(function() {
+                  afterCallback(false);
+                     }, 0);
+              }
+             }
+          } else {
+             if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
+                setTimeout(function() {
+                   afterCallback(false);
+                }, 0);
+             }
+          }
+      }); 
         },
         
+        requestNewAccessToken: function(afterCallback) {
+            if(!FacebookInAppBrowser.exists(this.settings.appId) || !FacebookInAppBrowser.exists(this.settings.redirectUrl)
+               || !FacebookInAppBrowser.exists(this.settings.appSecret) || window.localStorage.getItem('accessToken') == null) {
+              console.log('[FacebookInAppBrowser] You need to set up your app id, app secret, redirect url and have an access token.');
+              return false;
+            }
+        
+            var get_url = "https://graph.facebook.com/oauth/client_code?";
+                get_url += "access_token=" + window.localStorage.getItem('accessToken');
+          get_url += "&client_secret=" + this.settings.appSecret;
+                get_url += "&redirect_uri=" + this.settings.redirectUrl;
+                
+            var that = this;
+                    
+            FacebookInAppBrowser.ajax('GET', get_url, function(data) {
+              if(data) {
+                   var response = JSON.parse(data);
+             console.log("[FacebookInAppBrowser] Facebook responded with: " + JSON.stringify(response));
+             if(response.code) {
+              that._getNewAcessToken(response.code, afterCallback); 
+             } else {
+              console.log("[FacebookInAppBrowser] No code.");
+              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
+               setTimeout(function() {
+                  afterCallback(false);
+                     }, 0);
+              }
+             }
+          } else {
+             if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
+                setTimeout(function() {
+                   afterCallback(false);
+                }, 0);
+             }
+          }
+      });
+        },
+        
+
         /**
          * Get User Info
          * User needs to be logged in.
