@@ -13,6 +13,12 @@
            * @type {String}
            */
           appId: '',
+          
+          /**
+           * Your Facebook App Secret
+           * @type {String}
+           */
+          appSecret: '',
 
           /**
            * Redirect URL for "inside" script
@@ -169,8 +175,8 @@
             // Thx to @jcoltrane
             faceView = window.open(authorize_url, '_blank', 'location=no,hidden=yes');
             faceView.addEventListener('loadstop', function(){
- 		faceView.show();		
-	    });
+    faceView.show();    
+      });
 
             faceView.addEventListener('loadstart', callback);
             faceView.addEventListener('exit', function() {
@@ -201,7 +207,38 @@
               userDenied = false;
             });
         },
+        
+        graphApi: function(graphPath, afterCallback) {
+          if(window.localStorage.getItem('accessToken') === null) {
+            console.log('[FacebookInAppBrowser] No accessToken. Try login() first.');
+            return false;
+          }
+          if(!FacebookInAppBrowser.exists(graphPath)) {
+            console.log('[FacebookInAppBrowser] graphPath is a necessary parameter.');
+            return false;
+          }
 
+          var get_url  = "https://graph.facebook.com"+ graphPath +"?access_token=" + window.localStorage.getItem('accessToken');
+          console.log('[FacebookInAppBrowser] graphPath request url: ' + get_url);
+
+          FacebookInAppBrowser.ajax('GET', get_url, function(data) {
+            if(data) {
+              var response = JSON.parse(data);
+              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
+                setTimeout(function() {
+                  afterCallback(response);
+                }, 0);
+              }
+            } else {
+              if(FacebookInAppBrowser.exists(afterCallback, 'function')) {
+                setTimeout(function() {
+                  afterCallback(false);
+                }, 0);
+              }
+            }
+          });
+        },
+        
         /**
          * Get User Info
          * User needs to be logged in.
