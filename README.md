@@ -33,6 +33,9 @@ FacebookInAppBrowser.settings.appId = '123456789';
 FacebookInAppBrowser.settings.redirectUrl = 'http://example.com';
 FacebookInAppBrowser.settings.permissions = 'email';
 
+// Optional
+FacebookInAppBrowser.settings.timeoutDuration = 7500;
+
 // Login(accessToken will be stored trough localStorage in 'accessToken');
 FacebookInAppBrowser.login({
 	send: function() {
@@ -44,6 +47,9 @@ FacebookInAppBrowser.login({
 	denied: function() {
 		console.log('user denied');
 	},
+	timeout: function(){
+	    console.log('a timeout has occurred, probably a bad internet connection');
+	}
 	complete: function(access_token) {
 		console.log('window closed');
 		if(access_token) {
@@ -52,9 +58,9 @@ FacebookInAppBrowser.login({
 			console.log('no access token');
 		}
 	},
-	userId: function(userId) {
-		if(userId) {
-			console.log(JSON.stringify(userId));
+	userInfo: function(userInfo) {
+		if(userInfo) {
+			console.log(JSON.stringify(userInfo));
 		} else {
 			console.log('no user id');
 		}
