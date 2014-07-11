@@ -122,3 +122,9 @@ $('#bye').click(function() {
 	FacebookInAppBrowser.logout(...);
 });
 ``` 
+
+Thanks
+------
+Thanks to:  
+- @ilyakar
+- @jcoltrane
