@@ -62,7 +62,7 @@ FacebookInAppBrowser.login({
 		if(userInfo) {
 			console.log(JSON.stringify(userInfo));
 		} else {
-			console.log('no user id');
+			console.log('no user info');
 		}
 	}
 });
