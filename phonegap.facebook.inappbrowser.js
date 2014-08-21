@@ -405,6 +405,86 @@
         },
 
         /**
+         * Open Share dialog
+         * @param  {Object}   data either with "href" key or "action_type", "action_properties" keys
+         * @param  {Function} afterCallback Success/Error callback, will receive false on error, true or the created object_id on success
+         */
+        share: function(data, afterCallback) {
+            var obj = this;
+            var i;
+
+            var request_url  = "https://m.facebook.com/dialog/share?";
+            request_url += "app_id=" + this.settings.appId;
+            request_url += "&redirect_uri=" + this.settings.redirectUrl;
+            request_url += "&display=touch";
+
+            var fields = ['href', 'action_type', 'action_properties'];
+            for (i = 0; i < fields.length; i += 1) {
+                if (FacebookInAppBrowser.exists(data[fields[i]])) {
+                    request_url += '&' + fields[i] + '=' + data[fields[i]];
+                }
+            }
+
+            request_url = encodeURI(request_url);
+
+            console.log('[FacebookInAppBrowser] Share dialog, URL: ' + request_url);
+
+            var faceView,
+                seen_submit = false,
+                callback = function(location) {
+                    console.log("[FacebookInAppBrowser] Event 'loadstart': " + JSON.stringify(location));
+
+                    if (location.url == request_url) {
+                        // Do nothing
+
+                    } else if (location.url.indexOf('dialog/share/submit') !== -1) {
+                        seen_submit = true;
+
+                    } else if (location.url.indexOf('error_code=') !== -1) {
+                        // Error
+                        faceView.close();
+
+                        if (FacebookInAppBrowser.exists(afterCallback, 'function')) {
+                            setTimeout(function() {
+                                afterCallback(false);
+                            }, 0);
+                        }
+
+                    } else if (location.url.indexOf('?object_id=') !== -1) {
+                        // Success
+                        faceView.close();
+
+                        var object_id = location.url.match(/object_id=([^#]+)/)[1];
+
+                        if (FacebookInAppBrowser.exists(afterCallback, 'function')) {
+                            setTimeout(function() {
+                                afterCallback(object_id);
+                            }, 0);
+                        }
+
+                    } else if (location.url === obj.settings.redirectUrl + '#_=_'
+                        || location.url === obj.settings.redirectUrl + '?#_=_') { // facebook sometimes adds ? even though no query params added
+
+                            faceView.close();
+
+                            // Probably success, object_id not always returned
+                            var success = seen_submit ? true : false;
+                            if (FacebookInAppBrowser.exists(afterCallback, 'function')) {
+                                setTimeout(function() {
+                                    afterCallback(success);
+                                }, 0);
+                            }
+                        }
+                };
+
+            faceView = window.open(request_url, '_blank', 'location=no');
+            faceView.addEventListener('loadstart', callback);
+            faceView.addEventListener('loadstop', function(){
+                faceView.show();
+            });
+        },
+
+        /**
          * Logout User
          * From Facebook and your app
          *
