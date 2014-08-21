@@ -413,15 +413,15 @@
         logout: function(afterCallback) {
             var logout_url = encodeURI("https://www.facebook.com/logout.php?next="  + this.settings.redirectUrl + "&access_token=" + window.localStorage.getItem('facebookAccessToken'));
 
-            var face = window.open(logout_url, '_blank', 'hidden=yes,location=no'),
+            var faceView = window.open(logout_url, '_blank', 'hidden=yes,location=no'),
                 callback = function(location) {
                     console.log("[FacebookInAppBrowser] Event 'loadstart': " + JSON.stringify(location));
 
                     if (location.url == logout_url) {
                         // Do nothing
 
-                    } else if(location.url ===  FacebookInAppBrowser.settings.redirectUrl + '#_=_' || location.url === FacebookInAppBrowser.settings.redirectUrl || location.url === FacebookInAppBrowser.settings.redirectUrl + '/') {
-                        face.close();
+                    } else if (location.url ===  FacebookInAppBrowser.settings.redirectUrl + '#_=_' || location.url === FacebookInAppBrowser.settings.redirectUrl || location.url === FacebookInAppBrowser.settings.redirectUrl + '/') {
+                        faceView.close();
 
                         if (FacebookInAppBrowser.exists(afterCallback, 'function')) {
                             setTimeout(function() {
@@ -430,7 +430,7 @@
                         }
                     }
                 };
-            face.addEventListener('loadstart', callback);
+            faceView.addEventListener('loadstart', callback);
         }
     };
 
