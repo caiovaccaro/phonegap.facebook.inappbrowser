@@ -395,7 +395,7 @@
 
                     } else if (location.url === obj.settings.redirectUrl + '#_=_') {
                         // User clicked Cancel
-                        face.close();
+                        faceView.close();
 
                     }
 
