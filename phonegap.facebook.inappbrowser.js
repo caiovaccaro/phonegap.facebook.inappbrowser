@@ -77,10 +77,9 @@
             var request = new XMLHttpRequest();
             request.open(type, url, true);
             if (data) {
-                request.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+                request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                 request.setRequestHeader("Content-length", data.length);
                 request.setRequestHeader("Connection", "close");
-                request.send(data);
             }
             request.onreadystatechange = function() {
                 if (request.readyState == 4) {
@@ -96,7 +95,11 @@
                     }
                 }
             };
-            request.send();
+            if (data) {
+                request.send(data);
+            } else {
+                request.send();
+            }
         },
 
         /**
@@ -396,7 +399,6 @@
                     } else if (location.url === obj.settings.redirectUrl + '#_=_') {
                         // User clicked Cancel
                         faceView.close();
-
                     }
 
                 };
@@ -513,5 +515,4 @@
             faceView.addEventListener('loadstart', callback);
         }
     };
-
 }).call(this);
