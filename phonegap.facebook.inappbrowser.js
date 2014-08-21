@@ -323,8 +323,8 @@
             }
 
             var post_url = "https://graph.facebook.com/"+ window.localStorage.getItem('uid') +"/feed",
-                post_data = 'app_id='+FacebookInAppBrowser.settings.appId+'&access_token='+window.localStorage.getItem('facebookAccessToken')+'&redirect_uri='+FacebookInAppBrowser.settings.redirectUrl+
-                    '&name='+data.name+'&link='+data.link+'&description='+data.description+'&picture='+data.picture+'&message='+data.message;
+                post_data = 'app_id='+encodeURIComponent(FacebookInAppBrowser.settings.appId)+'&access_token='+encodeURIComponent(window.localStorage.getItem('facebookAccessToken'))+'&redirect_uri='+encodeURIComponent(FacebookInAppBrowser.settings.redirectUrl)+
+                    '&name='+encodeURIComponent(data.name)+'&link='+encodeURIComponent(data.link)+'&description='+encodeURIComponent(data.description)+'&picture='+encodeURIComponent(data.picture)+'&message='+encodeURIComponent(data.message);
 
             FacebookInAppBrowser.ajax('POST', post_url, function(data) {
                 if (data) {
