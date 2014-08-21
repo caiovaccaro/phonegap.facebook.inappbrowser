@@ -226,6 +226,7 @@
                 }
 
                 userDenied = false;
+                clearTimeout(timeout); // Clear the onTimeout function
             });
         },
 
