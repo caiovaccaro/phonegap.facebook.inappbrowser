@@ -5,7 +5,7 @@ FacebookInAppBrowser uses the InAppBrowser Phonegap plugin and localStorage. Doe
 
 This repo is based on [this question and answer](http://stackoverflow.com/questions/16576977/is-there-any-facebook-plugin-for-phonegap-2-7-0) and on [this repo using ChildBrowser](https://github.com/purplecabbage/phonegap-plugins/tree/master/iPhone/ChildBrowser/FBConnectExample)
 
-Until now "Login", "Logout", "Invite(Request)", "post(/feed)", "getInfo(/me)" and "getPermissions(/id/permissions)" are available.
+Until now "Login", "Logout", "Invite(Request)", "post(/feed)", "getInfo(/me)", "getPermissions(/id/permissions)" and "Share" are available.
 
 **Phonegap v2.8 up to 3.x**
 
@@ -101,6 +101,14 @@ FacebookInAppBrowser.post({name: 'My post',
 			                       console.log('post successful');
 			                   }
 			               });
+// Share urls
+FacebookInAppBrowser.share({
+    href: 'https://developers.facebook.com/docs/',
+}, function(response) {
+    i (response) {
+		alert('success');
+	}
+});
 
 // Logout
 FacebookInAppBrowser.logout(function() {
