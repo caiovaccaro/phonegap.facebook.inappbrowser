@@ -49,7 +49,7 @@ FacebookInAppBrowser.login({
 	},
 	timeout: function(){
 	    console.log('a timeout has occurred, probably a bad internet connection');
-	}
+	},
 	complete: function(access_token) {
 		console.log('window closed');
 		if(access_token) {
