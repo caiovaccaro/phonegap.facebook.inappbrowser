@@ -103,12 +103,27 @@ FacebookInAppBrowser.post({name: 'My post',
 			               });
 // Share urls
 FacebookInAppBrowser.share({
-    href: 'https://developers.facebook.com/docs/',
+    href: 'https://developers.facebook.com/docs/'
 }, function(response) {
-    i (response) {
-		alert('success');
-	}
+    if (response) {
+        alert('success');
+    }
 });
+
+// Share open graph actions
+FacebookInAppBrowser.share({
+    action_type: 'og.likes',
+    action_properties: JSON.stringify({
+        object:'https://developers.facebook.com/docs/',
+    })
+}, function(response) {
+    if (response) {
+	    alert('success');
+    }
+});
+// please note that you could get errors like:
+// "User is already associated to the object type, article, on a unique action..."
+// if you try to re-like something already liked by the user
 
 // Logout
 FacebookInAppBrowser.logout(function() {

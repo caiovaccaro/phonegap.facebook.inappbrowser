@@ -408,6 +408,9 @@
 
         /**
          * Open Share dialog
+         *
+         * Let you use the Share Dialog https://developers.facebook.com/docs/sharing/reference/share-dialog
+         *
          * @param  {Object}   data either with "href" key or "action_type", "action_properties" keys
          * @param  {Function} afterCallback Success/Error callback, will receive false on error, true or the created object_id on success
          */
@@ -415,7 +418,12 @@
             var obj = this;
             var i;
 
-            var request_url  = "https://m.facebook.com/dialog/share?";
+            var request_url  = "https://m.facebook.com/dialog/";
+            if (FacebookInAppBrowser.exists(data.href)) {
+                request_url += 'share?';
+            } else {
+                request_url += 'share_open_graph?';
+            }
             request_url += "app_id=" + this.settings.appId;
             request_url += "&redirect_uri=" + this.settings.redirectUrl;
             request_url += "&display=touch";
@@ -452,11 +460,12 @@
                             }, 0);
                         }
 
-                    } else if (location.url.indexOf('?object_id=') !== -1) {
+                    } else if (location.url.indexOf('?post_id=') !== -1
+                        || location.url.indexOf('?object_id=') !== -1) { // according to the docs, the parameter should be called object_id, however facebook uses post_id too
                         // Success
                         faceView.close();
 
-                        var object_id = location.url.match(/object_id=([^#]+)/)[1];
+                        var object_id = location.url.match(/(post|object)_id=([^#]+)/)[2];
 
                         if (FacebookInAppBrowser.exists(afterCallback, 'function')) {
                             setTimeout(function() {
