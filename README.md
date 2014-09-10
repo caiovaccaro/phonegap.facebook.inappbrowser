@@ -121,6 +121,9 @@ FacebookInAppBrowser.share({
 	    alert('success');
     }
 });
+// please note that you could get errors like:
+// "User is already associated to the object type, article, on a unique action..."
+// if you try to re-like something already liked by the user
 
 // Logout
 FacebookInAppBrowser.logout(function() {
