@@ -415,7 +415,12 @@
             var obj = this;
             var i;
 
-            var request_url  = "https://m.facebook.com/dialog/share?";
+            var request_url  = "https://m.facebook.com/dialog/";
+            if (FacebookInAppBrowser.exists(data.href)) {
+                request_url += 'share?';
+            } else {
+                request_url += 'share_open_graph?';
+            }
             request_url += "app_id=" + this.settings.appId;
             request_url += "&redirect_uri=" + this.settings.redirectUrl;
             request_url += "&display=touch";
