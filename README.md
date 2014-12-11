@@ -92,15 +92,17 @@ FacebookInAppBrowser.getPermissions(function(permissions) {
 	}
 });
 
-FacebookInAppBrowser.post({name: 'My post',
-			               link: 'http://frop.me',
-			               message: 'Try this out',
-			               picture: 'http://caiovaccaro.com.br/wp-content/uploads/2013/10/frop01.jpg',
-			               description: 'Sent trough mobile app'}, function(response) {
-			                   if(response) {
-			                       console.log('post successful');
-			                   }
-			               });
+FacebookInAppBrowser.post({
+	name: 'My post',
+	link: 'http://frop.me',
+	message: 'Try this out',
+	picture: 'http://caiovaccaro.com.br/wp-content/uploads/2013/10/frop01.jpg',
+	description: 'Sent trough mobile app'}, function(response) {
+		if(response) {
+			console.log('post successful');
+		}
+	});
+	
 // Share urls
 FacebookInAppBrowser.share({
     href: 'https://developers.facebook.com/docs/'
