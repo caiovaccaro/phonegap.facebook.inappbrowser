@@ -251,7 +251,7 @@
             return false;
           }
 
-          var get_url  = "https://graph.facebook.com/me?access_token=" + window.localStorage.getItem('accessToken');
+          var get_url  = "https://graph.facebook.com/me?fields=email,name,gender&access_token=" + window.localStorage.getItem('accessToken');
           console.log('[FacebookInAppBrowser] getInfo request url: ' + get_url);
 
           FacebookInAppBrowser.ajax('GET', get_url, function(data) {
